@@ -1,17 +1,16 @@
-package com.lucasdev.jornadacerta.common.data.local
+package com.lucasdev.jornadacerta.common.data.local.room
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 
 @Dao
 interface TimeRegisterDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateRegister(timeRegister: TimeRegisterEntity)
+    suspend fun insertOrUpdateRegister(register: TimeRegisterEntity)
 
     @Query("Select * From time_register ORDER BY id DESC")
     suspend fun getAllRegisters():List<TimeRegisterEntity>
@@ -20,7 +19,7 @@ interface TimeRegisterDao {
     suspend fun getRegisterByDate(date: String): TimeRegisterEntity?
 
     @Delete
-    suspend fun deleteRegister(timeRegister: TimeRegisterEntity)
+    suspend fun deleteRegister(register: TimeRegisterEntity)
 
     @Query("DELETE FROM time_register")
     suspend fun deleteAllRegisters()

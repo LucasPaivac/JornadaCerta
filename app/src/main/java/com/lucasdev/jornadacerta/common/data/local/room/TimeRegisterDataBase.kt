@@ -1,4 +1,4 @@
-package com.lucasdev.jornadacerta.common.data.local
+package com.lucasdev.jornadacerta.common.data.local.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

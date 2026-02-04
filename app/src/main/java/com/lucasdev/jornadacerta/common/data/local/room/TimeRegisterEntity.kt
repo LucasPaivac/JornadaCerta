@@ -1,4 +1,4 @@
-package com.lucasdev.jornadacerta.common.data.local
+package com.lucasdev.jornadacerta.common.data.local.room
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
