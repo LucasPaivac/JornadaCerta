@@ -1,10 +1,10 @@
-package com.lucasdev.jornadacerta.common.data.local.room
+package com.lucasdev.jornadacerta.common.data.local.room.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "time_register")
-data class TimeRegisterEntity(
+data class RegisterEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val date: String,

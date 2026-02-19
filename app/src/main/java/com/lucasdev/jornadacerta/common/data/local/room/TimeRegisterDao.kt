@@ -5,21 +5,22 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.lucasdev.jornadacerta.common.data.local.room.model.RegisterEntity
 
 @Dao
 interface TimeRegisterDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateRegister(register: TimeRegisterEntity)
+    suspend fun insertOrUpdateRegister(register: RegisterEntity)
 
     @Query("Select * From time_register ORDER BY id DESC")
-    suspend fun getAllRegisters():List<TimeRegisterEntity>
+    suspend fun getAllRegisters():List<RegisterEntity>
 
     @Query("Select * From time_register where date is :date")
-    suspend fun getRegisterByDate(date: String): TimeRegisterEntity?
+    suspend fun getRegisterByDate(date: String): RegisterEntity?
 
     @Delete
-    suspend fun deleteRegister(register: TimeRegisterEntity)
+    suspend fun deleteRegister(register: RegisterEntity)
 
     @Query("DELETE FROM time_register")
     suspend fun deleteAllRegisters()

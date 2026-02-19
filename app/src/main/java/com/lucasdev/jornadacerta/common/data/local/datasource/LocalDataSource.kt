@@ -1,17 +1,16 @@
 package com.lucasdev.jornadacerta.common.data.local.datasource
 
-import com.lucasdev.jornadacerta.common.data.local.room.TimeRegisterEntity
-import com.lucasdev.jornadacerta.common.model.TimeRegister
+import com.lucasdev.jornadacerta.common.data.local.room.model.RegisterEntity
 
 interface LocalDataSource {
 
-    suspend fun getAllRegisters(): List<TimeRegisterEntity>
+    suspend fun getAllRegisters(): List<RegisterEntity>
 
-    suspend fun getRegisterByDate(date: String): TimeRegisterEntity?
+    suspend fun getRegisterByDate(date: String): RegisterEntity?
 
-    suspend fun insertOrUpdateRegister(registerEntity: TimeRegisterEntity)
+    suspend fun insertOrUpdateRegister(registerEntity: RegisterEntity)
 
-    suspend fun deleteRegister(registerEntity: TimeRegisterEntity)
+    suspend fun deleteRegister(registerEntity: RegisterEntity)
 
     suspend fun deleteAllRegisters()
 
