@@ -1,5 +1,6 @@
-package com.lucasdev.jornadacerta.common.di
+package com.lucasdev.jornadacerta.di
 
+import com.lucasdev.jornadacerta.common.data.local.datasource.LocalDataSource
 import com.lucasdev.jornadacerta.common.data.local.datasource.LocalDataSourceImpl
 import dagger.Binds
 import dagger.Module
@@ -11,6 +12,6 @@ import dagger.hilt.android.components.ViewModelComponent
 interface DataModule {
 
     @Binds
-    fun bindLocalDataSource(impl: LocalDataSourceImpl): LocalDataSourceImpl
+    fun bindLocalDataSource(impl: LocalDataSourceImpl): LocalDataSource
 
 }

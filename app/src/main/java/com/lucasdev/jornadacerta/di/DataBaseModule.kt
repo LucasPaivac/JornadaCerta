@@ -1,4 +1,4 @@
-package com.lucasdev.jornadacerta.common.di
+package com.lucasdev.jornadacerta.di
 
 import android.app.Application
 import androidx.room.Room
@@ -9,6 +9,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -27,5 +29,10 @@ class DataBaseModule {
     @Provides
     fun provideDao(roomDataBase: TimeRegisterDataBase): TimeRegisterDao{
         return roomDataBase.getTimeRegisterDao()
+    }
+
+    @Provides
+    fun provideDispatcherIO(): CoroutineDispatcher{
+        return Dispatchers.IO
     }
 }
