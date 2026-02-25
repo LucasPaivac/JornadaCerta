@@ -8,8 +8,12 @@ import com.lucasdev.jornadacerta.common.utils.toUiData
 import com.lucasdev.jornadacerta.screens.register.presentation.data.model.RegisterUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Duration
@@ -26,6 +30,17 @@ class RegisterViewModel @Inject constructor(
     private val _uiRegister = MutableStateFlow(RegisterUiState())
     val uiRegister: StateFlow<RegisterUiState> = _uiRegister
 
+    val currentTime = flow {
+        while (true) {
+            emit(LocalTime.now())
+            delay(1000)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = LocalTime.now()
+    )
+
     init {
         loadCurrentRegister()
     }
@@ -39,15 +54,19 @@ class RegisterViewModel @Inject constructor(
                 val register = result.getOrNull()
                 if (register != null) {
                     val registerUiData = register.toUiData()
-                    val progress = percentCalculate(register.startTime, register.workload)
 
                     _uiRegister.update {
                         it.copy(
-                            welcomeMessage = "Você entrou às ${registerUiData.startTime}",
+                            welcomeMessage =
+                                if (registerUiData.isWorkInProgress) {
+                                    "Você entrou às ${registerUiData.startTime}"
+                                } else {
+                                    "Jornada finalizada"
+                                       },
                             register = registerUiData,
-                            statusBar = progress
                         )
                     }
+
                 } else {
                     _uiRegister.value = RegisterUiState()
                 }

@@ -48,7 +48,6 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.material3)
     coreLibraryDesugaring(libs.android.desugar.jdk)
 
     implementation(libs.androidx.core.ktx)

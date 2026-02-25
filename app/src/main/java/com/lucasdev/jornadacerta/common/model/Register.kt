@@ -11,6 +11,4 @@ data class Register(
     val lunchEndTime: LocalTime?,
     val endTime: LocalTime?,
     val workload: LocalTime
-){
-    val isWorkInProgress: Boolean get() = endTime == null
-}
+)

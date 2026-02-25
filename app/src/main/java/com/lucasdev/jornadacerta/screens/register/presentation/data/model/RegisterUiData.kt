@@ -7,5 +7,9 @@ data class RegisterUiData(
     val lunchStartTime: String?,
     val lunchEndTime: String?,
     val endTime: String?,
-    val workload: String?
-)
+    val workload: String?,
+    val estimatedExitTime: String?,
+){
+    val isWorkInProgress: Boolean
+        get() = startTime != null && endTime == null
+}

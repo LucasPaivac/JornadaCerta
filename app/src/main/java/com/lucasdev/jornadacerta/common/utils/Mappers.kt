@@ -38,5 +38,9 @@ fun Register.toUiData(): RegisterUiData{
         lunchEndTime = lunchEndTime?.format(formatter),
         endTime = endTime?.format(formatter),
         workload = workload.toString(),
+        estimatedExitTime = startTime
+            .plusHours(workload.hour.toLong())
+            .plusMinutes(workload.minute.toLong())
+            .format(formatter)
     )
 }
