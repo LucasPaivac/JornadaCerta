@@ -19,6 +19,9 @@ interface TimeRegisterDao {
     @Query("Select * From time_register where date is :date")
     suspend fun getRegisterByDate(date: String): RegisterEntity?
 
+    @Query("SELECT * FROM time_register ORDER BY date DESC LIMIT 3")
+    suspend fun getRecentRegisters(): List<RegisterEntity>
+
     @Delete
     suspend fun deleteRegister(register: RegisterEntity)
 

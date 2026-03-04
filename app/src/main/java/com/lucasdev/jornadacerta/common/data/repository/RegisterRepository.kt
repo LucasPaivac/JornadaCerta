@@ -30,16 +30,32 @@ class RegisterRepository @Inject constructor(
 
     }
 
-    /*suspend fun getAllRegisters(): List<TimeRegister>{
+    suspend fun getAllRegisters(): Result<List<Register>?>{
 
+        return try {
+
+            val registersEntity = local.getAllRegisters()
+            return Result.success(
+                registersEntity.map {
+                    it.toDomain()
+                }
+            )
+        }catch (ex: Exception){
+            ex.printStackTrace()
+            Result.failure(ex)
+        }
     }
 
-    suspend fun deleteRegister(register: TimeRegister){
-
+    suspend fun getRecentRegisters(): Result<List<Register>?>{
+        return try {
+            val recentRegitersEntity = local.getRecentRegisters()
+            return Result.success(
+                recentRegitersEntity.map { it.toDomain() }
+            )
+        }catch (ex: Exception){
+            ex.printStackTrace()
+            Result.failure(ex)
+        }
     }
-
-    suspend fun deleteAllRegisters(){
-
-    }*/
 
 }

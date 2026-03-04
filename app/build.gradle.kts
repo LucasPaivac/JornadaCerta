@@ -70,6 +70,12 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.maxkeppeler.dialogs.core)
+    implementation(libs.maxkeppeler.dialogs.duration)
+    implementation(libs.maxkeppeler.dialogs.clock)
+
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.junit)

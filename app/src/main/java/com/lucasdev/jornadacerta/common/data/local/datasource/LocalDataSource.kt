@@ -8,6 +8,8 @@ interface LocalDataSource {
 
     suspend fun getRegisterByDate(date: String): RegisterEntity?
 
+    suspend fun getRecentRegisters():List<RegisterEntity>
+
     suspend fun insertOrUpdateRegister(registerEntity: RegisterEntity)
 
     suspend fun deleteRegister(registerEntity: RegisterEntity)

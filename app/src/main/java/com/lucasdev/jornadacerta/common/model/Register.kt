@@ -10,5 +10,6 @@ data class Register(
     val lunchStartTime: LocalTime?,
     val lunchEndTime: LocalTime?,
     val endTime: LocalTime?,
-    val workload: LocalTime
+    val workload: LocalTime,
+    val balance: Long?
 )

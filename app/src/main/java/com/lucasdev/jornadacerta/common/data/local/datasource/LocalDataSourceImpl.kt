@@ -16,6 +16,10 @@ class LocalDataSourceImpl @Inject constructor(
         return dao.getRegisterByDate(date)
     }
 
+    override suspend fun getRecentRegisters(): List<RegisterEntity> {
+        return dao.getRecentRegisters()
+    }
+
     override suspend fun insertOrUpdateRegister(registerEntity: RegisterEntity) {
         return dao.insertOrUpdateRegister(registerEntity)
     }

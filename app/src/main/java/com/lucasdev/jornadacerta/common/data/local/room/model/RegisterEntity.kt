@@ -12,5 +12,6 @@ data class RegisterEntity(
     val lunchStartTime: String?,
     val lunchEndTime: String?,
     val endTime: String?,
-    val workload: String
+    val workload: String,
+    val balanceSeconds: Long?
 )
