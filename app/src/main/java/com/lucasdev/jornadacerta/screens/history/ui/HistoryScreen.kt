@@ -133,7 +133,7 @@ fun HistoryDayItem(
             onClick = {},
             label = {
                 Text(
-                    text = registerUiData.date ?: "",
+                    text = registerUiData.dateFormated ?: "",
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -271,34 +271,33 @@ fun HistoryScreenPreview() {
                         registers = listOf(
                             RegisterUiData(
                                 id = 0,
-                                date = "03/03/2026",
-                                startTime = "00:00",
-                                workload = "00:00",
-                                estimatedExitTime = "00:00",
+                                date = "2026-03-05",
+                                startTime = "08:00",
+                                endTime ="16:45",
+                                workload = "08:48",
+                                estimatedExitTime = "16:48",
+                                balance = "00:03",
+                                isBalanceNegative = true,
                             ),
                             RegisterUiData(
                                 id = 0,
-                                date = "03/03/2026",
-                                startTime = "00:00",
-                                lunchStartTime = "00:00",
-                                lunchEndTime = "00:00",
-                                endTime = "00:00",
-                                workload = "00:00",
-                                estimatedExitTime = "00:00",
+                                date = "2026-03-04",
+                                startTime = "08:00",
+                                endTime ="18:30",
+                                workload = "08:48",
+                                estimatedExitTime = "16:48",
                                 balance = "00:30",
-                                isBalanceNegative = true
+                                isBalanceNegative = false
                             ),
                             RegisterUiData(
                                 id = 0,
-                                date = "03/03/2026",
-                                startTime = "00:00",
-                                lunchStartTime = "00:00",
-                                lunchEndTime = "00:00",
-                                endTime = "00:00",
-                                workload = "00:00",
-                                estimatedExitTime = "00:00",
+                                date = "2026-03-04",
+                                startTime = "08:00",
+                                endTime ="18:30",
+                                workload = "08:48",
+                                estimatedExitTime = "16:48",
                                 balance = "00:30",
-                                isBalanceNegative = true
+                                isBalanceNegative = false
                             )
                         )
                     )

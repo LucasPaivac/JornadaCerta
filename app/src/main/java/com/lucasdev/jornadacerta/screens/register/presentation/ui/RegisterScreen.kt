@@ -722,7 +722,7 @@ private fun WorkloadSplitButton(
                     fontFamily = FontFamily.Monospace,
 
 
-                )
+                    )
             }
         },
         trailingButton = {
@@ -760,62 +760,75 @@ private fun WorkloadSplitButton(
 )
 @Composable
 fun PreviewRegisterContent() {
+
+    val registerUiState = RegisterUiState(
+        register =
+            RegisterUiData(
+                id = 0,
+                date = "2026-03-05",
+                startTime = "08:00",
+                endTime ="16:45",
+                workload = "08:48",
+                estimatedExitTime = "16:48",
+                balance = "00:03",
+                isBalanceNegative = true
+            )
+    )
+
     JornadaCertaTheme {
         Scaffold(
-            modifier = Modifier.fillMaxSize()) { paddingValues ->
-
-            val currentTime = LocalTime.parse("06:00:00")
-
-            RegisterContent(
-                modifier = Modifier
-                    .padding(paddingValues),
-                registerUiState = RegisterUiState(
-                    register = RegisterUiData(
-                        id = 0,
-                        date = "2026-03-04",
-                        startTime = "00:00",
-                        workload = "06:00",
-                        estimatedExitTime = "06:00",
-
+            floatingActionButton = {
+                RegisterEntryOutButton(
+                    label = registerUiState.labelButton,
+                    buttonColor = registerUiState.getButtonColor().first,
+                    onButtonColor = registerUiState.getButtonColor().second,
+                    isEnabled = registerUiState.isButtonEnabled,
+                    onClick = { },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                )
+            },
+            floatingActionButtonPosition = FabPosition.Center,
+            content = { paddingValues ->
+                RegisterContent(
+                    modifier = Modifier
+                        .padding(paddingValues),
+                    registerUiState = registerUiState,
+                    recentRegisters = listOf(
+                        registerUiState.register ?: RegisterUiData(
+                            id = 0,
+                            date = "2026-03-05",
+                            startTime = "08:00",
+                            workload = "08:48",
+                            estimatedExitTime = "16:48",
                         ),
-                    isError = false,
-                    errorMessage = ""
-                ),
-                recentRegisters = listOf(
-                    RegisterUiData(
-                        id = 0,
-                        date = "2026-03-04",
-                        startTime = "08:00",
-                        endTime = "18:30",
-                        workload = "10:00",
-                        balance = "00:30",
-                        isBalanceNegative = false
+                        RegisterUiData(
+                            id = 0,
+                            date = "2026-03-04",
+                            startTime = "08:00",
+                            endTime = "18:30",
+                            workload = "10:00",
+                            balance = "00:30",
+                            isBalanceNegative = false
+                        ),
+                        RegisterUiData(
+                            id = 0,
+                            date = "2026-03-03",
+                            startTime = "08:00",
+                            endTime = "18:30",
+                            workload = "10:00",
+                            balance = "00:30",
+                            isBalanceNegative = false
+                        ),
                     ),
-                    RegisterUiData(
-                        id = 0,
-                        date = "2026-03-04",
-                        startTime = "08:00",
-                        endTime = "18:30",
-                        workload = "10:00",
-                        balance = "00:30",
-                        isBalanceNegative = false
-                    ),
-                    RegisterUiData(
-                        id = 0,
-                        date = "2026-03-04",
-                        startTime = "08:00",
-                        endTime = "17:30",
-                        workload = "10:00",
-                        balance = "00:30",
-                        isBalanceNegative = true
-                    ),
-                ),
-                currentTime = currentTime,
-                currentWorkload = "08:48",
-                onWorkloadChanged = {},
-                onHistoryClick = {},
-                onEntryChanged = {})
-        }
+                    currentTime = LocalTime.now(),
+                    currentWorkload = "08:48",
+                    onWorkloadChanged = {},
+                    onHistoryClick = {},
+                    onEntryChanged = {})
+            }
+        )
 
     }
 }
