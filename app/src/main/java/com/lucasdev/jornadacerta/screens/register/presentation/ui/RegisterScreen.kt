@@ -37,6 +37,10 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
@@ -45,6 +49,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,6 +77,7 @@ import com.maxkeppeler.sheets.duration.DurationDialog
 import com.maxkeppeler.sheets.duration.models.DurationConfig
 import com.maxkeppeler.sheets.duration.models.DurationFormat
 import com.maxkeppeler.sheets.duration.models.DurationSelection
+import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalTime
 import java.util.Locale
@@ -88,16 +94,40 @@ fun RegisterScreen(
     val currentTime by viewModel.currentTime.collectAsState()
     val currentWorkload by viewModel.uiSelectedWorkload.collectAsState()
 
-    val state = rememberUseCaseState()
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
+    val state = rememberUseCaseState()
     EntryTimePicker(
         state = state,
         onEntryChanged = { customTime ->
             viewModel.onRegisterEntryOut(customTime)
+            scope.launch {
+                snackbarHostState.showSnackbar(
+                    message = "Horário registrado: $customTime",
+                    duration = SnackbarDuration.Short
+                )
+            }
         }
     )
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(
+                    containerColor = MaterialTheme.colorScheme.inverseSurface,
+                    contentColor = MaterialTheme.colorScheme.inverseOnSurface,
+                    content ={
+                        Text(
+                            text = data.visuals.message,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                )
+            }
+        },
         floatingActionButton = {
             RegisterEntryOutButton(
                 label = registerUiState.labelButton,
@@ -121,12 +151,22 @@ fun RegisterScreen(
                 currentWorkload = currentWorkload,
                 onWorkloadChanged = { newWorkload ->
                     viewModel.updateWorkload(newWorkload)
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "Carga horária atualizada: $newWorkload",
+                            duration = SnackbarDuration.Short)
+                    }
                 },
                 onHistoryClick = {
                     navController.navigate(route = "history")
                 },
                 onEntryChanged = { newEntry ->
                     viewModel.updateEntry(newEntry)
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "Entrada atualizada: $newEntry",
+                            duration = SnackbarDuration.Short)
+                    }
                 })
         }
     )
@@ -144,6 +184,7 @@ private fun EntryTimePicker(
         state = state,
         config = ClockConfig(
             defaultTime = LocalTime.now(),
+            boundary = LocalTime.MIN..LocalTime.now(),
             is24HourFormat = true
         ),
         selection = ClockSelection.HoursMinutes(
