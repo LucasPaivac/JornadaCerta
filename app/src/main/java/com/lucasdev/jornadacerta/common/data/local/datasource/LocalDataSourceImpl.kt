@@ -24,6 +24,11 @@ class LocalDataSourceImpl @Inject constructor(
         return dao.insertOrUpdateRegister(registerEntity)
     }
 
+    override suspend fun insertAll(list: List<RegisterEntity>) {
+        return dao.insertAll(list)
+    }
+
+
     override suspend fun deleteRegister(registerEntity: RegisterEntity) {
         return dao.deleteRegister(registerEntity)
     }

@@ -1,5 +1,6 @@
 package com.lucasdev.jornadacerta.screens.register.presentation
 
+import androidx.compose.foundation.rememberPlatformOverscrollFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -60,6 +61,7 @@ class RegisterViewModel @Inject constructor(
                 }
             }
         }
+        seedDatabase()
         loadCurrentRegister()
         loadRecentRegisters()
     }
@@ -176,6 +178,65 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
+    private fun seedDatabase(){
+        viewModelScope.launch(dispatcher) {
+            val fakeData = listOf(
+                RegisterUiData(
+                    id = 0,
+                    date = "2026-03-03",
+                    startTime = "08:00",
+                    endTime = "16:50",
+                    workload = "08:48",
+                    estimatedExitTime = "16:48",
+                    balance = "00:02",
+                    isBalanceNegative = false
+                ),
+                RegisterUiData(
+                    id = 0,
+                    date = "2026-03-02",
+                    startTime = "08:00",
+                    endTime = "16:55",
+                    workload = "08:48",
+                    estimatedExitTime = "16:48",
+                    balance = "00:07",
+                    isBalanceNegative = false
+                ),
+                RegisterUiData(
+                    id = 0,
+                    date = "2026-03-01",
+                    startTime = "08:02",
+                    endTime = "16:45",
+                    workload = "08:48",
+                    estimatedExitTime = "16:50",
+                    balance = "00:05",
+                    isBalanceNegative = true
+                ),
+                RegisterUiData(
+                    id = 0,
+                    date = "2026-02-28",
+                    startTime = "07:30",
+                    endTime = "16:00",
+                    workload = "08:48",
+                    estimatedExitTime = "16:18",
+                    balance = "00:18",
+                    isBalanceNegative = true
+                ),
+                RegisterUiData(
+                    id = 0,
+                    date = "2026-02-27",
+                    startTime = "07:40",
+                    endTime = "16:00",
+                    workload = "08:48",
+                    estimatedExitTime = "16:28",
+                    balance = "00:28",
+                    isBalanceNegative = true
+                ),
+            )
 
+            val fakeDataDomain = fakeData.map { it.toDomain() }
+
+            repository.insertAll(fakeDataDomain)
+        }
+    }
 
 }

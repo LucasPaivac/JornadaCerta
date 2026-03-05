@@ -58,4 +58,9 @@ class RegisterRepository @Inject constructor(
         }
     }
 
+    suspend fun insertAll(list: List<Register>){
+        val entityList = list.map { it.toEntity() }
+        local.insertAll(entityList)
+    }
+
 }

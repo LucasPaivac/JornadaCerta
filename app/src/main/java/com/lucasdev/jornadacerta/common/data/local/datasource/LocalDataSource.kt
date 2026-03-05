@@ -12,6 +12,8 @@ interface LocalDataSource {
 
     suspend fun insertOrUpdateRegister(registerEntity: RegisterEntity)
 
+    suspend fun insertAll(list: List<RegisterEntity>)
+
     suspend fun deleteRegister(registerEntity: RegisterEntity)
 
     suspend fun deleteAllRegisters()

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,9 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,7 +27,6 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,6 +58,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -82,7 +81,6 @@ import java.time.Duration
 import java.time.LocalTime
 import java.util.Locale
 
-
 @Composable
 fun RegisterScreen(
     navController: NavHostController,
@@ -97,27 +95,13 @@ fun RegisterScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val state = rememberUseCaseState()
-    EntryTimePicker(
-        state = state,
-        onEntryChanged = { customTime ->
-            viewModel.onRegisterEntryOut(customTime)
-            scope.launch {
-                snackbarHostState.showSnackbar(
-                    message = "Horário registrado: $customTime",
-                    duration = SnackbarDuration.Short
-                )
-            }
-        }
-    )
-
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) { data ->
                 Snackbar(
                     containerColor = MaterialTheme.colorScheme.inverseSurface,
                     contentColor = MaterialTheme.colorScheme.inverseOnSurface,
-                    content ={
+                    content = {
                         Text(
                             text = data.visuals.message,
                             modifier = Modifier.fillMaxWidth(),
@@ -128,23 +112,16 @@ fun RegisterScreen(
                 )
             }
         },
-        floatingActionButton = {
-            RegisterEntryOutButton(
-                label = registerUiState.labelButton,
-                buttonColor = registerUiState.getButtonColor().first,
-                onButtonColor = registerUiState.getButtonColor().second,
-                isEnabled = registerUiState.isButtonEnabled,
-                onClick = { state.show() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-            )
-        },
-        floatingActionButtonPosition = FabPosition.Center,
         content = { paddingValues ->
             RegisterContent(
                 modifier = Modifier
-                    .padding(paddingValues),
+                    .fillMaxSize()
+                    .padding(
+                        top = paddingValues.calculateTopPadding(),
+                        start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr),
+                        end = paddingValues.calculateRightPadding(LayoutDirection.Ltr),
+                        bottom = 0.dp
+                    ),
                 registerUiState = registerUiState,
                 recentRegisters = recentRegisters,
                 currentTime = currentTime,
@@ -154,46 +131,118 @@ fun RegisterScreen(
                     scope.launch {
                         snackbarHostState.showSnackbar(
                             message = "Carga horária atualizada: $newWorkload",
-                            duration = SnackbarDuration.Short)
+                            duration = SnackbarDuration.Short
+                        )
                     }
                 },
-                onHistoryClick = {
-                    navController.navigate(route = "history")
+                onRegisterEntryOut = { newEntry ->
+                    viewModel.onRegisterEntryOut(newEntry)
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "Horário registrado: $newEntry",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
                 },
                 onEntryChanged = { newEntry ->
                     viewModel.updateEntry(newEntry)
                     scope.launch {
                         snackbarHostState.showSnackbar(
                             message = "Entrada atualizada: $newEntry",
-                            duration = SnackbarDuration.Short)
+                            duration = SnackbarDuration.Short
+                        )
                     }
                 })
+
         }
+
     )
 
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EntryTimePicker(
-    state: UseCaseState,
+fun RegisterContent(
+    modifier: Modifier,
+    registerUiState: RegisterUiState,
+    recentRegisters: List<RegisterUiData>,
+    currentTime: LocalTime,
+    currentWorkload: String,
+    onWorkloadChanged: (String) -> Unit,
+    onRegisterEntryOut: (String) -> Unit,
     onEntryChanged: (String) -> Unit
 ) {
-    ClockDialog(
-        state = state,
-        config = ClockConfig(
-            defaultTime = LocalTime.now(),
-            boundary = LocalTime.MIN..LocalTime.now(),
-            is24HourFormat = true
-        ),
-        selection = ClockSelection.HoursMinutes(
-            onPositiveClick = { hours, minutes ->
-                val formattedTime = String.format("%02d:%02d", hours, minutes)
-                onEntryChanged(formattedTime)
-            }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+
+        Row(
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                modifier = Modifier
+                    .size(32.dp)
+                    .padding(end = 4.dp),
+                painter = painterResource(R.drawable.ic_time_logo),
+                contentDescription = "Timer logo",
+            )
+            Text(
+                text = "Jornada Certa",
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineSmall,
+            )
+        }
+
+        RegisterMainCard(
+            modifier = Modifier
+                .fillMaxHeight(0.40f)
+                .fillMaxWidth(),
+            registerUiState = registerUiState,
+            currentTime = currentTime,
+            currentWorkload = currentWorkload,
+            onWorkloadChanged = onWorkloadChanged,
+            onEntryChanged = onEntryChanged
         )
-    )
+
+        HorizontalDivider()
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+
+            RecentRegisterSession(
+                modifier = Modifier
+                    .align(Alignment.TopCenter),
+                recentRegisters = recentRegisters
+            )
+
+            RegisterEntryOutButton(
+                label = registerUiState.labelButton,
+                buttonColor = registerUiState.getButtonColor().first,
+                onButtonColor = registerUiState.getButtonColor().second,
+                isEnabled = registerUiState.isButtonEnabled,
+                onRegisterEntryOut = onRegisterEntryOut,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+            )
+        }
+
+
+    }
+
 }
 
 @Composable
@@ -202,12 +251,21 @@ private fun RegisterEntryOutButton(
     buttonColor: Color,
     onButtonColor: Color,
     isEnabled: Boolean,
-    onClick: () -> Unit,
+    onRegisterEntryOut: (String) -> Unit,
     modifier: Modifier,
 ) {
+    val state = rememberUseCaseState()
+
+    EntryTimePicker(
+        state = state,
+        onEntryChanged = { customTime ->
+            onRegisterEntryOut(customTime)
+        }
+    )
+
     ElevatedButton(
         modifier = modifier,
-        onClick = onClick,
+        onClick = { state.show() },
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.elevatedButtonColors(
             containerColor = buttonColor,
@@ -222,123 +280,18 @@ private fun RegisterEntryOutButton(
             ) {
                 Icon(
                     modifier = Modifier
-                        .size(42.dp),
+                        .size(36.dp),
                     painter = painterResource(R.drawable.ic_time_logo),
                     contentDescription = "Clock Icon"
                 )
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.headlineMedium
+                    style = MaterialTheme.typography.headlineSmall
                 )
             }
         }
     )
 }
-
-@Composable
-fun RegisterContent(
-    modifier: Modifier,
-    registerUiState: RegisterUiState,
-    recentRegisters: List<RegisterUiData>,
-    currentTime: LocalTime,
-    currentWorkload: String,
-    onWorkloadChanged: (String) -> Unit,
-    onHistoryClick: () -> Unit,
-    onEntryChanged: (String) -> Unit
-) {
-
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(vertical = 16.dp, horizontal = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-
-        item {
-            Row(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .padding(end = 4.dp),
-                    painter = painterResource(R.drawable.ic_time_logo),
-                    contentDescription = "Timer logo",
-                )
-
-                Text(
-                    text = "Jornada Certa",
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.headlineSmall,
-                )
-            }
-        }
-
-        item {
-            RegisterMainCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillParentMaxHeight(0.35f),
-                registerUiState = registerUiState,
-                currentTime = currentTime,
-                currentWorkload = currentWorkload,
-                onWorkloadChanged = onWorkloadChanged,
-                onEntryChanged = onEntryChanged
-            )
-        }
-
-        item {
-            Spacer(Modifier.size(16.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillParentMaxHeight(0.4f),
-                contentAlignment = Alignment.Center
-            ) {
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    RecentRegisterSession(
-                        modifier = Modifier,
-                        recentRegisters = recentRegisters
-                    )
-
-                    Button(
-                        onClick = onHistoryClick,
-                        modifier = Modifier,
-                        enabled = true,
-                        shape = CircleShape,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                        ),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_history),
-                            contentDescription = "History Icon Button"
-                        )
-                        Spacer(Modifier.size(4.dp))
-
-                        Text(
-                            text = "Histórico",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                }
-            }
-        }
-
-    }
-
-}
-
 
 @Composable
 fun RegisterMainCard(
@@ -549,6 +502,28 @@ fun RegisterMainCard(
         }
     }
 
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EntryTimePicker(
+    state: UseCaseState,
+    onEntryChanged: (String) -> Unit
+) {
+    ClockDialog(
+        state = state,
+        config = ClockConfig(
+            defaultTime = LocalTime.now(),
+            boundary = LocalTime.MIN..LocalTime.now(),
+            is24HourFormat = true
+        ),
+        selection = ClockSelection.HoursMinutes(
+            onPositiveClick = { hours, minutes ->
+                val formattedTime = String.format("%02d:%02d", hours, minutes)
+                onEntryChanged(formattedTime)
+            }
+        )
+    )
 }
 
 @Composable
@@ -808,7 +783,7 @@ fun PreviewRegisterContent() {
                 id = 0,
                 date = "2026-03-05",
                 startTime = "08:00",
-                endTime ="16:45",
+                endTime = "16:45",
                 workload = "08:48",
                 estimatedExitTime = "16:48",
                 balance = "00:03",
@@ -818,19 +793,6 @@ fun PreviewRegisterContent() {
 
     JornadaCertaTheme {
         Scaffold(
-            floatingActionButton = {
-                RegisterEntryOutButton(
-                    label = registerUiState.labelButton,
-                    buttonColor = registerUiState.getButtonColor().first,
-                    onButtonColor = registerUiState.getButtonColor().second,
-                    isEnabled = registerUiState.isButtonEnabled,
-                    onClick = { },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                )
-            },
-            floatingActionButtonPosition = FabPosition.Center,
             content = { paddingValues ->
                 RegisterContent(
                     modifier = Modifier
@@ -866,8 +828,9 @@ fun PreviewRegisterContent() {
                     currentTime = LocalTime.now(),
                     currentWorkload = "08:48",
                     onWorkloadChanged = {},
-                    onHistoryClick = {},
-                    onEntryChanged = {})
+                    onEntryChanged = {},
+                    onRegisterEntryOut = { }
+                )
             }
         )
 
