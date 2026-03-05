@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.maxkeppeler.dialogs.core)
     implementation(libs.maxkeppeler.dialogs.duration)
     implementation(libs.maxkeppeler.dialogs.clock)
+    implementation(libs.maxkeppeler.dialogs.info)
 
     testImplementation(libs.junit)
 

@@ -16,7 +16,7 @@ interface TimeRegisterDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(register: List<RegisterEntity>)
 
-    @Query("Select * From time_register ORDER BY id DESC")
+    @Query("Select * From time_register ORDER BY date DESC")
     suspend fun getAllRegisters():List<RegisterEntity>
 
     @Query("Select * From time_register where date is :date")

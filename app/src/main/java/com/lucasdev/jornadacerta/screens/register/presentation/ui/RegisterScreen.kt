@@ -76,6 +76,9 @@ import com.maxkeppeler.sheets.duration.DurationDialog
 import com.maxkeppeler.sheets.duration.models.DurationConfig
 import com.maxkeppeler.sheets.duration.models.DurationFormat
 import com.maxkeppeler.sheets.duration.models.DurationSelection
+import com.maxkeppeler.sheets.info.InfoDialog
+import com.maxkeppeler.sheets.info.models.InfoBody
+import com.maxkeppeler.sheets.info.models.InfoSelection
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalTime
@@ -234,6 +237,7 @@ fun RegisterContent(
                 onButtonColor = registerUiState.getButtonColor().second,
                 isEnabled = registerUiState.isButtonEnabled,
                 onRegisterEntryOut = onRegisterEntryOut,
+                registerUiState = registerUiState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
@@ -251,21 +255,67 @@ private fun RegisterEntryOutButton(
     buttonColor: Color,
     onButtonColor: Color,
     isEnabled: Boolean,
+    registerUiState: RegisterUiState,
     onRegisterEntryOut: (String) -> Unit,
     modifier: Modifier,
 ) {
-    val state = rememberUseCaseState()
+    val stateTimePicker = rememberUseCaseState()
+    val stateInfoDialog = rememberUseCaseState()
+
+    val isEndRegister = registerUiState.register?.startTime != null
+
+    val minTimeSelection = registerUiState.register?.startTime?.let {
+        LocalTime.parse(it)
+    } ?: LocalTime.MIN
+
+    var infoDialogLabel by remember { mutableStateOf("") }
+    var customTimeConfirmed by remember { mutableStateOf("") }
 
     EntryTimePicker(
-        state = state,
+        minTimeSelection = minTimeSelection,
+        state = stateTimePicker,
         onEntryChanged = { customTime ->
-            onRegisterEntryOut(customTime)
+            if (isEndRegister) {
+                val customTimeLocalTime = LocalTime.parse(customTime)
+                val estimatedExit = LocalTime.parse(registerUiState.register.estimatedExitTime)
+
+                if (customTimeLocalTime.isBefore(estimatedExit)) {
+                    val diff = Duration.between(customTimeLocalTime, estimatedExit)
+                    val hours = diff.toHours()
+                    val minutes = diff.toMinutes() % 60
+
+                    val timeText = when {
+                        hours > 0 && minutes > 0 -> "${hours}h e ${minutes}m"
+                        hours > 0 -> "${hours}h"
+                        else -> "${minutes}m"
+                    }
+
+                    infoDialogLabel =
+                        "Ainda faltam $timeText para cumprir a jornada. Deseja registar a saída?"
+
+                    customTimeConfirmed = customTime
+                    stateInfoDialog.show()
+                } else {
+                    onRegisterEntryOut(customTime)
+                }
+            } else {
+                onRegisterEntryOut(customTime)
+            }
         }
+    )
+
+    CustomInfoDialog(
+        label = infoDialogLabel,
+        state = stateInfoDialog,
+        onPositiveClick = {
+            onRegisterEntryOut(customTimeConfirmed)
+        },
+        onNegativeClick = { stateInfoDialog.finish() }
     )
 
     ElevatedButton(
         modifier = modifier,
-        onClick = { state.show() },
+        onClick = { stateTimePicker.show() },
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.elevatedButtonColors(
             containerColor = buttonColor,
@@ -313,7 +363,7 @@ fun RegisterMainCard(
         if (start != null && estimatedExit != null && workload != null && endTime == null) {
 
             val diff = Duration.between(currentTime, estimatedExit)
-            val remainingText = if (diff.isNegative) "00:00:00" else formatDuration(diff)
+            val remainingText = if (diff.isNegative) "00:00:00" else formatDurationHHMMSS(diff)
             val totalMinutes = (workload.hour * 60) + workload.minute
             val minutesPassed = Duration.between(start, currentTime).toMinutes()
             val progressPercent =
@@ -380,6 +430,7 @@ fun RegisterMainCard(
                         val state = rememberUseCaseState()
 
                         EntryTimePicker(
+                            minTimeSelection = LocalTime.MIN,
                             state = state,
                             onEntryChanged = { customTime ->
                                 onEntryChanged(customTime)
@@ -507,14 +558,16 @@ fun RegisterMainCard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EntryTimePicker(
+    minTimeSelection: LocalTime,
     state: UseCaseState,
     onEntryChanged: (String) -> Unit
 ) {
+
     ClockDialog(
         state = state,
         config = ClockConfig(
             defaultTime = LocalTime.now(),
-            boundary = LocalTime.MIN..LocalTime.now(),
+            boundary = minTimeSelection..LocalTime.now(),
             is24HourFormat = true
         ),
         selection = ClockSelection.HoursMinutes(
@@ -524,6 +577,28 @@ private fun EntryTimePicker(
             }
         )
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CustomInfoDialog(
+    label: String,
+    state: UseCaseState,
+    onPositiveClick: () -> Unit,
+    onNegativeClick: () -> Unit
+) {
+
+    InfoDialog(
+        state = state,
+        selection = InfoSelection(
+            onPositiveClick = onPositiveClick,
+            onNegativeClick = onNegativeClick
+        ),
+        body = InfoBody.Default(
+            bodyText = label
+        )
+    )
+
 }
 
 @Composable
@@ -837,9 +912,10 @@ fun PreviewRegisterContent() {
     }
 }
 
-private fun formatDuration(duration: Duration): String {
+private fun formatDurationHHMMSS(duration: Duration): String {
     val hours = duration.toHours()
     val minutes = duration.toMinutesPart()
     val seconds = duration.toSecondsPart()
     return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 }
+
