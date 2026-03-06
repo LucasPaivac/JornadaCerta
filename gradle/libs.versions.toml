@@ -16,6 +16,7 @@ desugar = "2.0.4"
 material3 = "1.5.0-alpha03+"
 dataStore = "1.2.0"
 maxkeppeler-dialog = "1.3.0"
+accompanist-permissions = "0.37.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +47,7 @@ maxkeppeler-dialogs-core = {group = "com.maxkeppeler.sheets-compose-dialogs", na
 maxkeppeler-dialogs-duration = {group = "com.maxkeppeler.sheets-compose-dialogs", name = "duration", version.ref = "maxkeppeler-dialog"}
 maxkeppeler-dialogs-clock = {group = "com.maxkeppeler.sheets-compose-dialogs", name = "clock", version.ref = "maxkeppeler-dialog"}
 maxkeppeler-dialogs-info = {group = "com.maxkeppeler.sheets-compose-dialogs", name = "info", version.ref = "maxkeppeler-dialog"}
+google-accompanist-permissions ={group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist-permissions"}
 
 
 [plugins]

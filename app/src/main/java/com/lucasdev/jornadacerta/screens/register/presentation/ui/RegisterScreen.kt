@@ -1,5 +1,6 @@
 package com.lucasdev.jornadacerta.screens.register.presentation.ui
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
@@ -43,6 +44,7 @@ import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +64,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.lucasdev.jornadacerta.R
 import com.lucasdev.jornadacerta.common.model.RegisterUiData
 import com.lucasdev.jornadacerta.screens.register.presentation.RegisterViewModel
@@ -84,11 +89,22 @@ import java.time.Duration
 import java.time.LocalTime
 import java.util.Locale
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RegisterScreen(
     navController: NavHostController,
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
+
+    val permissionState = rememberPermissionState(
+        permission = Manifest.permission.POST_NOTIFICATIONS
+    )
+
+    LaunchedEffect(Unit) {
+        if (!permissionState.status.isGranted) {
+            permissionState.launchPermissionRequest()
+        }
+    }
 
     val registerUiState by viewModel.uiRegister.collectAsState()
     val recentRegisters by viewModel.recentHistory.collectAsState()

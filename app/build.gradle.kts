@@ -77,6 +77,8 @@ dependencies {
     implementation(libs.maxkeppeler.dialogs.clock)
     implementation(libs.maxkeppeler.dialogs.info)
 
+    implementation(libs.google.accompanist.permissions)
+
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.junit)

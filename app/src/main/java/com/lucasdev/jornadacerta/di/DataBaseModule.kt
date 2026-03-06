@@ -1,6 +1,8 @@
 package com.lucasdev.jornadacerta.di
 
+import android.app.AlarmManager
 import android.app.Application
+import android.app.NotificationManager
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStoreFile
@@ -26,26 +28,36 @@ class DataBaseModule {
     fun provideDataBase(application: Application): TimeRegisterDataBase {
         return Room.databaseBuilder(
             application.applicationContext,
-            TimeRegisterDataBase::class.java,"database-time-register"
+            TimeRegisterDataBase::class.java, "database-time-register"
         )
             .fallbackToDestructiveMigration(true)
             .build()
     }
 
     @Provides
-    fun provideDao(roomDataBase: TimeRegisterDataBase): TimeRegisterDao{
+    fun provideDao(roomDataBase: TimeRegisterDataBase): TimeRegisterDao {
         return roomDataBase.getTimeRegisterDao()
     }
 
     @Provides
-    fun provideDispatcherIO(): CoroutineDispatcher{
+    fun provideDispatcherIO(): CoroutineDispatcher {
         return Dispatchers.IO
     }
 
     private val Context.dataStore by preferencesDataStore(name = "user_settings")
 
     @Provides
-    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences>{
+    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
         return context.dataStore
+    }
+
+    @Provides
+    fun provideNotificationManager(@ApplicationContext context: Context): NotificationManager {
+        return context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    }
+
+    @Provides
+    fun provideAlarmManager(@ApplicationContext context: Context): AlarmManager{
+        return context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
 }

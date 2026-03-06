@@ -4,6 +4,7 @@ import androidx.compose.foundation.rememberPlatformOverscrollFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.lucasdev.jornadacerta.common.data.notification.NotificationHelper
 import com.lucasdev.jornadacerta.common.data.repository.RegisterRepository
 import com.lucasdev.jornadacerta.common.data.repository.UserPreferencesRepository
 import com.lucasdev.jornadacerta.common.utils.toDomain
@@ -28,7 +29,8 @@ import javax.inject.Inject
 class RegisterViewModel @Inject constructor(
     private val repository: RegisterRepository,
     private val dispatcher: CoroutineDispatcher,
-    private val userPrefRepo: UserPreferencesRepository
+    private val userPrefRepo: UserPreferencesRepository,
+    private val notificationHelper: NotificationHelper
 ) : ViewModel() {
 
     private val _uiRegister = MutableStateFlow(RegisterUiState())
@@ -76,6 +78,11 @@ class RegisterViewModel @Inject constructor(
                 if (register != null) {
                     val registerUiData = register.toUiData()
 
+                    val hasExited = registerUiData.endTime != null
+                    registerUiData.estimatedExitTime?.let { time ->
+                        notificationHelper.scheduleJornadaReminders(time, hasExited)
+                    }
+
                     _uiRegister.value = RegisterUiState(
                         register = registerUiData,
                     )
@@ -119,7 +126,7 @@ class RegisterViewModel @Inject constructor(
             val fakeData = listOf(
                 RegisterUiData(
                     id = 1,
-                    date = "2026-02-28",
+                    date = "2026-03-01",
                     startTime = "07:40",
                     endTime = "16:00",
                     workload = "08:48",
@@ -129,7 +136,7 @@ class RegisterViewModel @Inject constructor(
                 ),
                 RegisterUiData(
                     id = 2,
-                    date = "2026-03-01",
+                    date = "2026-03-02",
                     startTime = "07:30",
                     endTime = "16:00",
                     workload = "08:48",
@@ -139,7 +146,7 @@ class RegisterViewModel @Inject constructor(
                 ),
                 RegisterUiData(
                     id = 3,
-                    date = "2026-03-02",
+                    date = "2026-03-03",
                     startTime = "08:02",
                     endTime = "16:45",
                     workload = "08:48",
@@ -149,7 +156,7 @@ class RegisterViewModel @Inject constructor(
                 ),
                 RegisterUiData(
                     id = 4,
-                    date = "2026-03-03",
+                    date = "2026-03-04",
                     startTime = "08:00",
                     endTime = "16:55",
                     workload = "08:48",
@@ -159,7 +166,7 @@ class RegisterViewModel @Inject constructor(
                 ),
                 RegisterUiData(
                     id = 5,
-                    date = "2026-03-04",
+                    date = "2026-03-05",
                     startTime = "08:00",
                     endTime = "16:50",
                     workload = "08:48",
