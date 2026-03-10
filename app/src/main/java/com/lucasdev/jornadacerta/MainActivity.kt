@@ -1,6 +1,7 @@
 package com.lucasdev.jornadacerta
 
 import android.os.Bundle
+import android.widget.EditText
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge

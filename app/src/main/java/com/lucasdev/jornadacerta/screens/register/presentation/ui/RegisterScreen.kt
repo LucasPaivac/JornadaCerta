@@ -70,7 +70,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.lucasdev.jornadacerta.R
 import com.lucasdev.jornadacerta.common.model.RegisterUiData
 import com.lucasdev.jornadacerta.screens.register.presentation.RegisterViewModel
-import com.lucasdev.jornadacerta.screens.register.presentation.data.model.RegisterUiState
+import com.lucasdev.jornadacerta.screens.register.model.RegisterUiState
 import com.lucasdev.jornadacerta.ui.theme.JornadaCertaTheme
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
@@ -858,12 +858,13 @@ private fun WorkloadSplitButton(
 @Preview(
     name = "Light mode preview",
     showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+
 )
 @Preview(
     name = "Dark mode preview",
     showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
 )
 @Composable
 fun PreviewRegisterContent() {

@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.lucasdev.jornadacerta.common.data.repository.RegisterRepository
 import com.lucasdev.jornadacerta.common.utils.toUiData
 import com.lucasdev.jornadacerta.screens.history.data.model.HistoryUiState
-import com.lucasdev.jornadacerta.screens.register.presentation.data.model.RegisterUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,16 +1,14 @@
 package com.lucasdev.jornadacerta.screens.register.presentation
 
-import androidx.compose.foundation.rememberPlatformOverscrollFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lucasdev.jornadacerta.common.data.notification.NotificationHelper
 import com.lucasdev.jornadacerta.common.data.repository.RegisterRepository
 import com.lucasdev.jornadacerta.common.data.repository.UserPreferencesRepository
 import com.lucasdev.jornadacerta.common.utils.toDomain
 import com.lucasdev.jornadacerta.common.utils.toUiData
 import com.lucasdev.jornadacerta.common.model.RegisterUiData
-import com.lucasdev.jornadacerta.screens.register.presentation.data.model.RegisterUiState
+import com.lucasdev.jornadacerta.screens.register.model.RegisterUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
@@ -64,7 +62,8 @@ class RegisterViewModel @Inject constructor(
             }
         }
 
-            seedDatabase()
+        loadCurrentRegister()
+        loadRecentRegisters()
     }
 
     private fun loadCurrentRegister(date: LocalDate = LocalDate.now()) {
@@ -118,69 +117,6 @@ class RegisterViewModel @Inject constructor(
                 val ex = result.exceptionOrNull()
                 ex?.printStackTrace()
             }
-        }
-    }
-
-    private fun seedDatabase(){
-        viewModelScope.launch(dispatcher) {
-            val fakeData = listOf(
-                RegisterUiData(
-                    id = 1,
-                    date = "2026-03-01",
-                    startTime = "07:40",
-                    endTime = "16:00",
-                    workload = "08:48",
-                    estimatedExitTime = "16:28",
-                    balance = "00:28",
-                    isBalanceNegative = true
-                ),
-                RegisterUiData(
-                    id = 2,
-                    date = "2026-03-02",
-                    startTime = "07:30",
-                    endTime = "16:00",
-                    workload = "08:48",
-                    estimatedExitTime = "16:18",
-                    balance = "00:18",
-                    isBalanceNegative = true
-                ),
-                RegisterUiData(
-                    id = 3,
-                    date = "2026-03-03",
-                    startTime = "08:02",
-                    endTime = "16:45",
-                    workload = "08:48",
-                    estimatedExitTime = "16:50",
-                    balance = "00:05",
-                    isBalanceNegative = true
-                ),
-                RegisterUiData(
-                    id = 4,
-                    date = "2026-03-04",
-                    startTime = "08:00",
-                    endTime = "16:55",
-                    workload = "08:48",
-                    estimatedExitTime = "16:48",
-                    balance = "00:07",
-                    isBalanceNegative = false
-                ),
-                RegisterUiData(
-                    id = 5,
-                    date = "2026-03-05",
-                    startTime = "08:00",
-                    endTime = "16:50",
-                    workload = "08:48",
-                    estimatedExitTime = "16:48",
-                    balance = "00:02",
-                    isBalanceNegative = false
-                ),
-            )
-
-            val fakeDataDomain = fakeData.map { it.toDomain() }
-
-            repository.insertAll(fakeDataDomain)
-            loadCurrentRegister()
-            loadRecentRegisters()
         }
     }
 

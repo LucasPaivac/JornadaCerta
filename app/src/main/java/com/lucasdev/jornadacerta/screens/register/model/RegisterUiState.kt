@@ -1,4 +1,4 @@
-package com.lucasdev.jornadacerta.screens.register.presentation.data.model
+package com.lucasdev.jornadacerta.screens.register.model
 
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
